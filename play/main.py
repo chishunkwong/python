@@ -3,7 +3,7 @@ from ebird import db_loader
 
 
 def main():
-    db_loader.insert('US', 'DC')
+    db_loader.insert('US', 'WV')
     # db_loader.create_tables()
 
 

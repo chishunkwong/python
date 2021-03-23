@@ -6,8 +6,6 @@ import json
 import sqlalchemy
 from sqlalchemy.orm import sessionmaker
 
-db = 'DB'
-
 
 def connect():
     '''Returns an engine, a metadata object and a Session'''
@@ -47,9 +45,11 @@ def insert(country, region):
         obsDt = s['obsDt']
         date_format = '%Y-%m-%d' if len(obsDt) == 10 else '%Y-%m-%d %H:%M'
         observation_datetime = dt.datetime.strptime(obsDt, date_format)
+        # may be make the column nullable? It will suffice for now
+        how_many = s['howMany'] if 'howMany' in s else 0
         sig = Sighting(s['speciesCode'], genus, s['comName'],
                        country, region, s['lat'], s['lng'],
-                       observation_datetime, s['howMany'], s['locId'], s['subId'])
+                       observation_datetime, how_many, s['locId'], s['subId'])
         session.add(sig)
     session.commit()
 

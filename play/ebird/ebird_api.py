@@ -10,7 +10,7 @@ def get_config():
         return ebird_token, apis
 
 
-def get_region_recent_sightings(country, region, days_back=2, max_results=100):
+def get_region_recent_sightings(country, region, days_back=2, max_results=200):
     ebird_token, apis = get_config()
     url = apis['region_recent']
     headers = {'X-eBirdApiToken': ebird_token}
