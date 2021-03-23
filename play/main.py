@@ -1,7 +1,13 @@
 from solution import Solution
+from ebird import db_loader
 
 
 def main():
+    db_loader.insert('US', 'DC')
+    # db_loader.create_tables()
+
+
+def main_not():
     sol = Solution()
     # print(sol.increasingTriplet([2, 1, 5, 0, 4, 6]))
     # print(sol.increasingTriplet([1, 5, 0, 4, 1, 3]))
