@@ -16,7 +16,8 @@ def main():
     # arr = [1, 1, 1, 4, 5, 6]
     # print(Solution.max_profit([3, 2, 3, 1, 4, 2, 6]))
     # print(Solution.max_profit([9, 7, 5, 4, 1]))
-    print(sol.maxSlidingWindow([1, 3, -1, -3, 5, 3, 6, 7], 3))
+    # print(sol.maxSlidingWindow([1, 3, -1, -3, 5, 3, 6, 7], 3))
+    print(sol.maxSlidingWindow([9, 8, 7, 6, 5, 4, 3, 2, 1], 3))
 
 
 def test() -> None:

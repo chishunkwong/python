@@ -1,4 +1,5 @@
 from typing import List
+from collections import deque
 
 
 class Solution:
@@ -78,7 +79,7 @@ class Solution:
             best = max(best, prices[i + 1] - cur_low)
         return best
 
-    def maxSlidingWindow(self, nums: List[int], k: int) -> List[int]:
+    def maxSlidingWindow_slow(self, nums: List[int], k: int) -> List[int]:
         """
         Given an array of integers, return the list of maximum of each sliding window of length k,
         starting from left to right. So if nums has length l then the result should be
@@ -125,3 +126,84 @@ class Solution:
             result.append(last_max)
 
         return result
+
+    def maxSlidingWindow2(self, nums: List[int], k: int) -> List[int]:
+        """
+        See function above, this one should be much faster
+        (no it is not, failed even earlier than the last one)
+        """
+        nums_len = len(nums)
+        if k < 1 or k > nums_len:
+            return None
+        if k == 1:
+            return nums
+        if k == nums_len:
+            return [max(nums)]
+        with_index = [(nums[i], i) for i in range(0, nums_len)]
+        with_index.sort(key=lambda t: t[0], reverse=True)
+        # Fill with a number that is smaller than the constraint minimum
+        result = [-999999] * (nums_len - k + 1)
+        filled = 0
+        for next_largest, i in with_index:
+            # if the next largest is bigger than what's in the result, replace it
+            sphere_of_influence = range(max(i - k + 1, 0), min(i + 1, nums_len - k + 1))
+            for j in sphere_of_influence:
+                if next_largest > result[j]:
+                    result[j] = next_largest
+                    filled = filled + 1
+            if filled >= nums_len - k + 1:
+                print("breaking early", filled, next_largest)
+                break
+        return result
+
+    def maxSlidingWindow(self, nums: List[int], k: int) -> List[int]:
+        """
+        See the two functions above, this one will work, because it is not my algo but rather
+        from leetcode's discussion (and using the problem's hints). Just really practicing
+        """
+        nums_len = len(nums)
+        if k < 1 or k > nums_len:
+            return None
+        if k == 1:
+            return nums
+        if k == nums_len:
+            return [max(nums)]
+        answer = list()
+        # last k entries in decreasing order, elements are tuples like (n, i),
+        # where n is the number and i is the index, so in that sense all we need is i, because n can be had from i
+        deq = deque()
+        # first add the first k numbers to the deque, but drop any number
+        # that has a number to the right of it that is at least as large as it
+        for i in range(0, k):
+            n = nums[i]
+            # there is no peek in deque
+            while deq and n >= deq[-1][0]:
+                deq.pop()
+            # add both the value and the index, because we will need to know
+            # if a max happens at the left edge or not
+            deq.append((n, i))
+        answer.append(deq[0][0])
+        # now the rest, follow similar logic as when we add the first k
+        # but this time we also check if a number is outside the current window, if so we pop it as well
+        for i in range(k, nums_len):
+            n = nums[i]
+            while deq:
+                right_most = deq[-1]
+                if right_most[0] <= n or right_most[1] <= i - k:
+                    deq.pop()
+                else:
+                    break
+            # print(deq, n, i)
+            deq.append((n, i))
+            # now take from the left until we find one that is in the current window,
+            # while popping the ones that have become out of range
+            while deq:
+                left_most = deq[0]
+                if left_most[1] <= i - k:
+                    deq.popleft()
+                else:
+                    answer.append(left_most[0])
+                    break
+
+        return answer
+
