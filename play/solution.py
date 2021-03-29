@@ -77,3 +77,51 @@ class Solution:
             cur_low = min(cur_low, p)
             best = max(best, prices[i + 1] - cur_low)
         return best
+
+    def maxSlidingWindow(self, nums: List[int], k: int) -> List[int]:
+        """
+        Given an array of integers, return the list of maximum of each sliding window of length k,
+        starting from left to right. So if nums has length l then the result should be
+        an array of length l - k + 1.
+        In particular, if k == l then the result is just the max of the array,
+        and if k == 1 the result is just the array itself
+        """
+        nums_len = len(nums)
+        if k < 1 or k > nums_len:
+            return None
+        if k == 1:
+            return nums
+
+        def max_and_index(numbers, start, end):
+            """
+            Given an array of integers and a start and end (exclusive),
+            return the maximum in that range and the index that the maximum is at.
+            In case of ties, this function favors the one later in the array
+            """
+            ind = start
+            cur_max = numbers[start]
+            for i in range(start + 1, end):
+                n = nums[i]
+                if n >= cur_max:
+                    cur_max = n
+                    ind = i
+            return cur_max, ind
+
+        result = list()
+        last_max = -9999999
+        last_max_at = -1
+        for i in range(0, nums_len - k + 1):
+            window_rightmost_at = i + k - 1
+            window_rightmost = nums[window_rightmost_at]
+            if last_max_at == i - 1:
+                # darn, the max from the last window is at the left most, have to recalculate
+                last_max, last_max_at = max_and_index(nums, i, i + k)
+            elif last_max <= window_rightmost:
+                # the rightmost won (tie is won by the right), so advance
+                last_max, last_max_at = window_rightmost, window_rightmost_at
+            else:
+                # the maximum stays (and its index)
+                pass
+            result.append(last_max)
+
+        return result
