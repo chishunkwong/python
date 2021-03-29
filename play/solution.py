@@ -61,3 +61,19 @@ class Solution:
             if has_smaller is not None and num > has_smaller:
                 return True
         return False
+
+    @staticmethod
+    def max_profit(prices: List[int]):
+        p_len = len(prices)
+        if p_len < 2:
+            return 0
+        # Python has no smallest integer, so this has to do
+        best = prices[1] - prices[0]
+        if p_len == 2:
+            return best
+        cur_low = prices[0]
+        for i in range(1, p_len - 1):
+            p = prices[i]
+            cur_low = min(cur_low, p)
+            best = max(best, prices[i + 1] - cur_low)
+        return best
