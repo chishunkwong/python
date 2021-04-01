@@ -207,3 +207,29 @@ class Solution:
 
         return answer
 
+    def generateParenthesis(self, n: int) -> List[str]:
+        return self.generateParenthesisWithMem(n, dict())
+
+    def generateParenthesisWithMem(self, n: int, haves) -> List[str]:
+        if n in haves:
+            return haves[n]
+        if n == 0:
+            return list()
+        if n == 1:
+            return ["()"]
+        answer = set()
+        n_minus_ones = self.generateParenthesisWithMem(n - 1, haves)
+        for s in n_minus_ones:
+            answer.add(f"(){s}")
+            answer.add(f"({s})")
+            answer.add(f"{s}()")
+        # any combination for i and n-i can sit next to each other, the example that broke
+        # my original simple recursive answer was "(())(())" for n=4. I was just doing the three lines
+        # above to go from n-1 to n
+        for i in range(2, n - 1):
+            eyes = self.generateParenthesisWithMem(i, haves)
+            n_minus_eyes = self.generateParenthesisWithMem(n - i, haves)
+            for s1 in eyes:
+                for s2 in n_minus_eyes:
+                    answer.add(f"{s1}{s2}")
+        return list(answer)
