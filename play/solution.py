@@ -210,7 +210,7 @@ class Solution:
     def generateParenthesis(self, n: int) -> List[str]:
         return self.generateParenthesisWithMem(n, dict())
 
-    def generateParenthesisWithMem(self, n: int, haves) -> List[str]:
+    def generateParenthesisWithMem(self, n: int, haves: dict) -> List[str]:
         if n in haves:
             return haves[n]
         if n == 0:
@@ -233,3 +233,60 @@ class Solution:
                 for s2 in n_minus_eyes:
                     answer.add(f"{s1}{s2}")
         return list(answer)
+
+    def search(self, nums: List[int], target: int) -> int:
+        """
+        https://leetcode.com/problems/search-in-rotated-sorted-array/
+        search for a target in a sorted array that has been wrapped around once, like
+        [4, 5, 1, 2, 3]
+        """
+        # first find the break, the list is supposed to be increasing, so take the half way point and compare
+        # with first and last (binary search)
+        l = len(nums)
+        start = 0
+        end = l - 1
+        have_wrap = False
+        while True:
+            mid = int((start + end) / 2)
+            print(mid, start, end)
+            if nums[start] > nums[mid]:
+                have_wrap = True
+                end = mid
+            elif nums[mid] > nums[end]:
+                have_wrap = True
+                start = mid
+            else:
+                break
+            if end - start <= 0:
+                break
+            if end - start == 1:
+                mid = end if nums[start] > nums[end] else start
+                break
+        print(mid)
+        mid = mid if have_wrap else 0
+        # Now that we found the wrapping point, it may be easier to just unwrap and then do a binary search,
+        # but it would be slightly slower, so let's do it the hard way
+        start = mid
+        end = (mid + l - 1) % l
+        counter = 0
+        found = -1
+        while counter < 100:
+            counter = counter + 1
+            sub_len = (end - start + 1) % l
+            sub_len = l if sub_len == 0 else sub_len
+            mid = int(start + sub_len / 2) % l
+            print(mid, start, end, sub_len)
+            if nums[mid] < target:
+                start = mid
+            elif nums[mid] > target:
+                end = mid
+            else:
+                found = mid
+                break
+            if sub_len <= 2:
+                if nums[start] == target:
+                    found = start
+                if nums[end] == target:
+                    found = end
+                break
+        return found

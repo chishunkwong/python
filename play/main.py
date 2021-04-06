@@ -10,15 +10,13 @@ def main_not():
 def main():
     sol = Solution()
     # print(sol.increasingTriplet([2, 1, 5, 0, 4, 6]))
-    # print(sol.increasingTriplet([1, 5, 0, 4, 1, 3]))
-    # print(sol.increasingTriplet([4, 5, 3, 4, 1, 2]))
-    # arr = [1, 1, 1, 4, 5, 6, 7]
-    # arr = [1, 1, 1, 4, 5, 6]
     # print(Solution.max_profit([3, 2, 3, 1, 4, 2, 6]))
-    # print(Solution.max_profit([9, 7, 5, 4, 1]))
     # print(sol.maxSlidingWindow([1, 3, -1, -3, 5, 3, 6, 7], 3))
-    # print(sol.maxSlidingWindow([9, 8, 7, 6, 5, 4, 3, 2, 1], 3))
-    print(sol.generateParenthesis(4))
+    # print(sol.generateParenthesis(4))
+    # print(sol.search([4, 5, 6, 7, 0, 1, 2], 3))
+    # print(sol.search([3], 4))
+    print(sol.search([3, 1], 2))
+    # print(sol.search([4, 5, 6, 7, 9, 10], 4))
 
 
 def test() -> None:
