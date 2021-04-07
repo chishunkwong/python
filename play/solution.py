@@ -290,3 +290,26 @@ class Solution:
                     found = end
                 break
         return found
+
+    def rotate(self, matrix: List[List[int]]) -> None:
+        """
+        Rotate a square matrix clockwise 90 degrees, in place swapping, not returning anything
+        """
+        side = len(matrix)
+        if side <= 1:
+            return
+        # no need to consider the extra 0.5 when side is odd, because in that case it will be a center
+        # pixel (element) that does not rotate
+        half = int(side / 2)
+        for layer in range(0, half):
+            for i in range(layer, side - layer - 1):
+                # stash the one on the top
+                swp = matrix[layer][i]
+                # take the number on the left to the top
+                matrix[layer][i] = matrix[side - i - 1][layer]
+                # take the number on the bottom to the left
+                matrix[side - i - 1][layer] = matrix[side - layer - 1][side - i - 1]
+                # take the number on the right to the bottom
+                matrix[side - layer - 1][side - i - 1] = matrix[i][side - layer - 1]
+                # set the stashed top to the right
+                matrix[i][side - layer - 1] = swp
