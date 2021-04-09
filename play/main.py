@@ -14,11 +14,12 @@ def main():
     # print(sol.maxSlidingWindow([1, 3, -1, -3, 5, 3, 6, 7], 3))
     # print(sol.generateParenthesis(4))
     # print(sol.search([4, 5, 6, 7, 0, 1, 2], 3))
-    arr = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
     # arr = [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12], [13, 14, 15, 16]]
-    sol.rotate(arr)
-    for line in arr:
-        print(line)
+    # sol.rotate(arr)
+    # for line in arr:
+    #     print(line)
+    # print(sol.searchRange([8, 8, 8, 8], 8))
+    print(sol.searchRange([5, 7, 7, 8, 8, 8, 10], 7))
 
 
 def test() -> None:

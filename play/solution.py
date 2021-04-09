@@ -313,3 +313,55 @@ class Solution:
                 matrix[side - layer - 1][side - i - 1] = matrix[i][side - layer - 1]
                 # set the stashed top to the right
                 matrix[i][side - layer - 1] = swp
+
+    def searchRange(self, nums: List[int], target: int) -> List[int]:
+        nums_len = len(nums)
+        if not nums:
+            return [-1, -1]
+        if nums_len == 1:
+            if nums[0] == target:
+                return [0, 0]
+            else:
+                return [-1, -1]
+
+        from typing import Tuple
+
+        def bin_search(start: int, end: int) -> Tuple[int, int, int]:
+            """
+            find an index of target in nums within the given start and end (inclusive)
+            :return: a tuple of 3 ints: the index, the start and the end in the last binary search
+            that found the target
+            """
+            if end - start <= 1:
+                if nums[start] == target:
+                    return start, start, end
+                elif nums[end] == target:
+                    return end, start, end
+                else:
+                    return -1, start, end
+            mid = int((start + end) / 2)
+            at_mid = nums[mid]
+            if at_mid > target:
+                return bin_search(start, mid)
+            elif at_mid < target:
+                return bin_search(mid, end)
+            else:
+                return mid, start, end
+
+        found, start, end = bin_search(0, nums_len - 1)
+        if found == -1:
+            return [-1, -1]
+        found_first = found
+        left_limit = found
+        while found != -1 and found > start:
+            found, start, _ = bin_search(start, found - 1)
+            if found != -1:
+                left_limit = found
+        found = found_first
+        right_limit = found
+        while found != -1 and found < end:
+            found, _, end = bin_search(found + 1, end)
+            if found != -1:
+                right_limit = found
+
+        return [left_limit, right_limit]
