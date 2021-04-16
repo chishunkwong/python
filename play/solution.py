@@ -365,3 +365,40 @@ class Solution:
                 right_limit = found
 
         return [left_limit, right_limit]
+
+    def jump(self, nums: List[int]) -> int:
+        """
+        https://leetcode.com/problems/jump-game-ii/
+        Given an array of max allowed jumps at a particular location, find the minimum number of jumps to go
+        from the 0-th index of the array to the last index of the array. E.g. [2,3,1,1,4] is 2 (from 0-th to 1-st
+        i.e. use only 1 of the allowed 2, then jump 3 indices to reach the last index)
+        """
+        return Solution.min_jump_at_idx(nums, 0, dict())
+
+    @staticmethod
+    def min_jump_at_idx(nums: List[int], idx: int, haves: dict) -> int:
+        """
+        like the function above, but find the minimum jump starting from a particular index, also uses a
+        dict to remember the minimum if we have already calculated it before
+        """
+        nums_len = len(nums)
+        if idx == nums_len -1:
+            # we are there, so even if allowed jump is 0 we are still good
+            return 0
+        allowed = nums[idx]
+        if allowed == 0:
+            # we will never get there, so return just a very big number
+            return 9999999999
+        if idx + allowed >= nums_len:
+            # print("reached:", idx, allowed)
+            return 1
+        if idx in haves:
+            return haves[idx]
+        candidates = list()
+        for jump in range(1, allowed + 1):
+            candidates.append(1 + Solution.min_jump_at_idx(nums, idx + jump, haves))
+        answer = min(candidates)
+        haves[idx] = answer
+        # print("partial:", idx, answer)
+        return answer
+

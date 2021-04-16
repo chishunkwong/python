@@ -7,7 +7,7 @@ def main_not():
     # db_loader.create_tables()
 
 
-def main():
+def main1():
     sol = Solution()
     # print(sol.increasingTriplet([2, 1, 5, 0, 4, 6]))
     # print(Solution.max_profit([3, 2, 3, 1, 4, 2, 6]))
@@ -20,6 +20,13 @@ def main():
     #     print(line)
     # print(sol.searchRange([8, 8, 8, 8], 8))
     print(sol.searchRange([5, 7, 7, 8, 8, 8, 10], 7))
+
+
+def main():
+    sol = Solution()
+    print(sol.jump([0]))
+    print(sol.jump([3, 0, 0, 0]))
+    print(sol.jump([2, 3, 1, 1, 4]))
 
 
 def test() -> None:
