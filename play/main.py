@@ -24,9 +24,8 @@ def main1():
 
 def main():
     sol = Solution()
-    print(sol.jump([0]))
-    print(sol.jump([3, 0, 0, 0]))
-    print(sol.jump([2, 3, 1, 1, 4]))
+    # print(sol.jump([2, 3, 1, 1, 4]))
+    print(sol.permute([1, 2, 3]))
 
 
 def test() -> None:

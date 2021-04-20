@@ -382,7 +382,7 @@ class Solution:
         dict to remember the minimum if we have already calculated it before
         """
         nums_len = len(nums)
-        if idx == nums_len -1:
+        if idx == nums_len - 1:
             # we are there, so even if allowed jump is 0 we are still good
             return 0
         allowed = nums[idx]
@@ -402,3 +402,32 @@ class Solution:
         # print("partial:", idx, answer)
         return answer
 
+    def permute(self, nums: List[int]) -> List[List[int]]:
+        """
+        Given an array nums of distinct integers, return all the possible permutations, in any order.
+        """
+        seed = list()
+        seed.append([])
+        return Solution.permute_recur(nums, seed)
+
+    @staticmethod
+    def permute_recur(nums: List[int], answers) -> List[List[int]]:
+        nums_len = len(nums)
+        if nums_len == 1:
+            only_num = nums[0]
+            for a_list in answers:
+                a_list.append(only_num)
+            return answers
+        else:
+            combined_answers = list()
+            for i in range(0, nums_len):
+                answers_clone = list()
+                for l in answers:
+                    # deep clone
+                    answers_clone.append(list(l))
+                num = nums[i]
+                for a_list in answers_clone:
+                    a_list.append(num)
+                ans_i = Solution.permute_recur(nums[0:i] + nums[i + 1: nums_len], answers_clone)
+                combined_answers.extend(ans_i)
+            return combined_answers
