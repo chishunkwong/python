@@ -431,3 +431,138 @@ class Solution:
                 ans_i = Solution.permute_recur(nums[0:i] + nums[i + 1: nums_len], answers_clone)
                 combined_answers.extend(ans_i)
             return combined_answers
+
+    def findMedianSortedArrays(self, nums1: List[int], nums2: List[int]) -> float:
+        """
+        Given two sorted arrays nums1 and nums2 of size m and n respectively,
+        return the median of the two sorted arrays.
+        At least one of the two arrays can be assumed to be non-empty
+        """
+        len1 = len(nums1)
+        len2 = len(nums2)
+        if len1 == 0:
+            return Solution.simple_median(nums2)
+        if len2 == 0:
+            return Solution.simple_median(nums1)
+        len_all = len1 + len2
+        is_odd = len_all % 2 == 1
+        half = (len_all + 1) / 2 if is_odd else len_all / 2
+        start1 = 0
+        start2 = 0
+        half_index1 = None
+        half_index2 = None
+        use_one = None
+        while half_index1 is None and half_index2 is None:
+            need_ahead = half - start1 - start2
+            if need_ahead == 1:
+                one_more1 = nums1[start1 + 1]
+                one_more2 = nums2[start2 + 1]
+                if one_more1 > one_more2:
+                    half_index1 = start1
+                    half_index2 = start2 + 1
+                    use_one = False
+                else:
+                    half_index2 = start2
+                    half_index1 = start1 + 1
+                    use_one = True
+            # now we try to find the element at the index half (within the combined, sorted, array)
+            half_need = int(need_ahead / 2)
+            if len1 - start1 <= len2 - start2:
+                # first array has fewer numbers (counting from the current start), so we take
+                # from it first as it is the one that may not have enough elements to walk ahead of
+                take1 = half_need if half_need <= len1 else len1 - start1
+                take2 = need_ahead - take1
+            else:
+                # vice versa
+                take2 = half_need if half_need <= len2 else len2 - start2
+                take1 = need_ahead - take2
+            at1 = nums1[start1 + take1 - 1]
+            at2 = nums2[start2 + take2 - 1]
+            if at1 == at2:
+                # we got lucky, the two arrays have the same value, so it does not matter which one we take from
+                # and it will still give us the half value, we will use nums1
+                half_index1 = start1 + take1 - 1
+                half_index2 = start2 + take2 - 1
+                use_one = True
+                break
+            if at1 > at2:
+                # in case nums2 is actually exhausted, then it is easy
+                if start2 + take2 == len2:
+                    half_index1 = half - len2 - 1
+                    half_index2 = None
+                    use_one = True
+                else:
+                    # we took two samples, one from each array, and found that the one at array 1 is larger
+                    # so we step back in array 1. I.e. we change the start1 to match at2, and try again
+                    start1 = Solution.find_target_index(nums1, at2)
+                    start2 = start2 + take2
+            else:
+                # must be at2 > at1, because we already dealt with the equal case
+                # do the same thing as above, just 1 is 2 and 2 is 1
+                if start1 + take1 == len1:
+                    half_index2 = half - len1 - 1
+                    half_index1 = None
+                    use_one = False
+                else:
+                    start2 = Solution.find_target_index(nums2, at1)
+                    start1 = start1 + take1
+        if use_one:
+            median = nums1[half_index1]
+        else:
+            median = nums2[half_index2]
+
+        # whew, now we know what's at half, but still need to do the even case
+        if not is_odd:
+            just_below = median
+            if half_index1 is None:
+                just_above = nums2[half_index2 + 1]
+            elif half_index2 is None:
+                just_above = nums1[half_index1 + 1]
+            else:
+                ja1 = nums1[half_index1 + 1]
+                ja2 = nums2[half_index2 + 1]
+                if ja1 >= just_below and ja2 >= just_below:
+                    just_above = min(ja1, ja2)
+                elif ja1 < just_below:
+                    just_above = ja2
+                else:
+                    just_above = ja1
+            median = (just_below + just_above) / 2
+
+        return median
+
+    @staticmethod
+    def simple_median(nums: List[int]) -> float:
+        l = len(nums)
+        if l % 2 == 0:
+            return (nums[l / 2 - 1] + nums[l / 2]) / 2
+        else:
+            return nums[(l + 1) / 2]
+
+    @staticmethod
+    def find_target_index(nums: List[int], target: int) -> float:
+        """
+        Given a sorted array and a target, find an index in the array where the value matches the target,
+        if no match is found, return the index where the value is the last one to be below the target.
+        If even that does not exist, i.e. the target is smaller than even the first value, then still return 0
+        """
+        l = len(nums)
+        start = 0
+        end = l - 1
+        found = None
+        while end - start > 1 and found is None:
+            mid = int((end + start) / 2)
+            at_mid = nums[mid]
+            if at_mid == target:
+                found = mid
+            elif at_mid < target:
+                start = mid + 1
+            else:
+                end = mid - 1
+        if found is None:
+            if nums[start] >= target:
+                return start
+            if nums[end] <= target:
+                return end
+            return start
+        return found
