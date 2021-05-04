@@ -447,27 +447,54 @@ class Solution:
         len_all = len1 + len2
         is_odd = len_all % 2 == 1
         half = int((len_all + 1) / 2 if is_odd else len_all / 2)
+        if is_odd:
+            return Solution.find_value_at_sorted_index(nums1, nums2, half)
+        else:
+            # Not the most effective, because if we found the value at half, we will almost have the value
+            # at half plus one, but this is simpler
+            median = (Solution.find_value_at_sorted_index(nums1, nums2, half)
+                      + Solution.find_value_at_sorted_index(nums1, nums2, half + 1)) / 2
+            return median
+
+    @staticmethod
+    def find_value_at_sorted_index(nums1: List[int], nums2: List[int], idx: int) -> float:
+        """
+        Given two sorted, non-empty, int arrays, and an int that is between 0 and len1 + len2, find the value
+        at combined index of that int, if the two arrays were to be put together and sorted
+        Note that idx is 1-based
+        """
+        len1 = len(nums1)
+        len2 = len(nums2)
         start1 = 0
         start2 = 0
-        half_index1 = None
-        half_index2 = None
-        use_one = None
-        while half_index1 is None and half_index2 is None:
-            need_ahead = half - start1 - start2 - 2
-            if need_ahead == 0:
+        found = None
+        while found is None:
+            # need_ahead is how much we need to advance, starting from the two respective starts, to reach
+            # the number at idx (if the arrays were put together and sorted)
+            need_ahead = idx - start1 - start2 - 2
+            if need_ahead <= 0:
+                at1 = nums1[start1]
+                at2 = nums2[start2]
+                if need_ahead == -1:
+                    # this is the special case where both arrays have one element
+                    found = min(at1, at2)
+                    break
+                # if we get here it means we have reached the decision point where we check to see
+                # if the idx element should be the larger at-x or should be the one after the smaller at-x
                 one_more1 = None if start1 + 1 == len1 else nums1[start1 + 1]
                 one_more2 = None if start2 + 1 == len2 else nums2[start2 + 1]
-                # TBC, we would have start1 = 0 and start2 = 0
-                if one_more1 is None or one_more2 is not None and one_more1 > one_more2:
-                    half_index1 = start1
-                    half_index2 = start2 + 1
-                    use_one = False
+                if at1 == at2:
+                    # this case is probably not needed because we should have checked this condition already
+                    found = at1
+                elif at1 < at2:
+                    found = at2 if one_more1 is None or one_more1 > at2 else one_more1
                 else:
-                    half_index2 = start2
-                    half_index1 = start1 + 1
-                    use_one = True
+                    # vice versa
+                    found = at1 if one_more2 is None or one_more2 > at1 else one_more2
+                # we are done
                 break
-            # now we try to find the element at the index half (within the combined, sorted, array)
+            # if we get here we are not close enough yet, so we advance within each array, by giving
+            # half of need_ahead to each array, taking into account one of the arrays may overflow
             half_need = int(need_ahead / 2)
             if len1 - start1 <= len2 - start2:
                 # first array has fewer numbers (counting from the current start), so we take
@@ -478,76 +505,55 @@ class Solution:
                 # vice versa
                 take2 = half_need if half_need <= len2 else len2 - start2
                 take1 = need_ahead - take2
-            at1 = nums1[start1 + take1 - 1]
-            at2 = nums2[start2 + take2 - 1]
+            at1 = nums1[start1 + take1]
+            at2 = nums2[start2 + take2]
             print(at1, at2)
             if at1 == at2:
-                # we got lucky, the two arrays have the same value, so it does not matter which one we take from
-                # and it will still give us the half value, we will use nums1
-                half_index1 = start1 + take1 - 1
-                half_index2 = start2 + take2 - 1
-                use_one = True
-                break
-            if at1 > at2:
-                # in case nums2 is actually exhausted, then it is easy
+                # we got lucky, the two arrays have the same value at the two advanced indices,
+                # so we know either one can be our value at idx.
+                found = at1
+            elif at1 > at2:
+                # in case nums2 is actually exhausted, then at1 is already the answer
                 if start2 + take2 == len2:
-                    half_index1 = half - len2 - 1
-                    half_index2 = None
-                    use_one = True
+                    found = at1
                 else:
-                    # we took two samples, one from each array, and found that the one at array 1 is larger
-                    # so we step back in array 1. I.e. we change the start1 to match at2, and try again
-                    start1 = Solution.find_target_index(nums1, at2)
-                    start2 = start2 + take2
+                    # we took two samples, one from each array, and found that the one at array1 is larger
+                    # so we step back in array1. I.e. we change start1 to the index in array1 where the value is
+                    # the first such that is larger than at2 (we know it must exist, because worst case the value
+                    # will be at1). Now we try again by returning to the top of the loop
+                    old_start1 = start1 + take1
+                    start1 = Solution.find_target_index(nums1, at2 + 0.5)
+                    start2 = start2 + take2 + (old_start1 - start1)
             else:
                 # must be at2 > at1, because we already dealt with the equal case
                 # do the same thing as above, just 1 is 2 and 2 is 1
                 if start1 + take1 == len1:
-                    half_index2 = half - len1 - 1
-                    half_index1 = None
-                    use_one = False
+                    found = at2
                 else:
-                    start2 = Solution.find_target_index(nums2, at1)
-                    start1 = start1 + take1
-        if use_one:
-            median = nums1[half_index1]
-        else:
-            median = nums2[half_index2]
+                    old_start2 = start2 + take2
+                    start2 = Solution.find_target_index(nums2, at1 + 0.5)
+                    start1 = start1 + take1 + (old_start2 - start2)
 
-        # whew, now we know what's at half, but still need to do the even case
-        if not is_odd:
-            just_below = median
-            if half_index1 is None:
-                just_above = nums2[half_index2 + 1]
-            elif half_index2 is None:
-                just_above = nums1[half_index1 + 1]
-            else:
-                ja1 = None if half_index1 + 1 == len1 else nums1[half_index1 + 1]
-                ja2 = None if half_index2 + 1 == len2 else nums2[half_index2 + 1]
-                if ja1 is not None and ja2 is not None and ja1 >= just_below and ja2 >= just_below:
-                    just_above = min(ja1, ja2)
-                elif ja1 is None or ja1 < just_below:
-                    just_above = ja2
-                else:
-                    just_above = ja1
-            median = (just_below + just_above) / 2
-
-        return median
+        return found
 
     @staticmethod
     def simple_median(nums: List[int]) -> float:
         l = len(nums)
         if l % 2 == 0:
-            return (nums[l / 2 - 1] + nums[l / 2]) / 2
+            half = int(l / 2)
+            return (nums[half - 1] + nums[half]) / 2
         else:
-            return nums[(l + 1) / 2]
+            return nums[int((l + 1) / 2)]
 
     @staticmethod
-    def find_target_index(nums: List[int], target: int) -> int:
+    def find_target_index(nums: List[int], target: float) -> int:
         """
-        Given a sorted array and a target, find an index in the array where the value matches the target,
-        if no match is found, return the index where the value is the last one to be below the target.
-        If even that does not exist, i.e. the target is smaller than even the first value, then still return 0
+        Given a sorted array and a target, find an index in the array where the value matches the target
+        (there can be many).
+        Note the target can be a float in which case there cannot be a match.
+        If no match is found, return the index where the value is the first one to be above the target.
+        If even that does not exist, i.e. the target is larger than all in the array
+        then return the length of the array
         """
         l = len(nums)
         start = 0
@@ -562,10 +568,13 @@ class Solution:
                 start = mid + 1
             else:
                 end = mid - 1
+
         if found is None:
             if nums[start] >= target:
-                return start
-            if nums[end] <= target:
-                return end
-            return start
+                found = start
+            elif nums[end] >= target:
+                found = end
+            else:
+                found = l
+
         return found
