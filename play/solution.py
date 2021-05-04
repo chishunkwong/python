@@ -446,18 +446,19 @@ class Solution:
             return Solution.simple_median(nums1)
         len_all = len1 + len2
         is_odd = len_all % 2 == 1
-        half = (len_all + 1) / 2 if is_odd else len_all / 2
+        half = int((len_all + 1) / 2 if is_odd else len_all / 2)
         start1 = 0
         start2 = 0
         half_index1 = None
         half_index2 = None
         use_one = None
         while half_index1 is None and half_index2 is None:
-            need_ahead = half - start1 - start2
-            if need_ahead == 1:
-                one_more1 = nums1[start1 + 1]
-                one_more2 = nums2[start2 + 1]
-                if one_more1 > one_more2:
+            need_ahead = half - start1 - start2 - 2
+            if need_ahead == 0:
+                one_more1 = None if start1 + 1 == len1 else nums1[start1 + 1]
+                one_more2 = None if start2 + 1 == len2 else nums2[start2 + 1]
+                # TBC, we would have start1 = 0 and start2 = 0
+                if one_more1 is None or one_more2 is not None and one_more1 > one_more2:
                     half_index1 = start1
                     half_index2 = start2 + 1
                     use_one = False
@@ -465,6 +466,7 @@ class Solution:
                     half_index2 = start2
                     half_index1 = start1 + 1
                     use_one = True
+                break
             # now we try to find the element at the index half (within the combined, sorted, array)
             half_need = int(need_ahead / 2)
             if len1 - start1 <= len2 - start2:
@@ -478,6 +480,7 @@ class Solution:
                 take1 = need_ahead - take2
             at1 = nums1[start1 + take1 - 1]
             at2 = nums2[start2 + take2 - 1]
+            print(at1, at2)
             if at1 == at2:
                 # we got lucky, the two arrays have the same value, so it does not matter which one we take from
                 # and it will still give us the half value, we will use nums1
@@ -519,11 +522,11 @@ class Solution:
             elif half_index2 is None:
                 just_above = nums1[half_index1 + 1]
             else:
-                ja1 = nums1[half_index1 + 1]
-                ja2 = nums2[half_index2 + 1]
-                if ja1 >= just_below and ja2 >= just_below:
+                ja1 = None if half_index1 + 1 == len1 else nums1[half_index1 + 1]
+                ja2 = None if half_index2 + 1 == len2 else nums2[half_index2 + 1]
+                if ja1 is not None and ja2 is not None and ja1 >= just_below and ja2 >= just_below:
                     just_above = min(ja1, ja2)
-                elif ja1 < just_below:
+                elif ja1 is None or ja1 < just_below:
                     just_above = ja2
                 else:
                     just_above = ja1
@@ -540,7 +543,7 @@ class Solution:
             return nums[(l + 1) / 2]
 
     @staticmethod
-    def find_target_index(nums: List[int], target: int) -> float:
+    def find_target_index(nums: List[int], target: int) -> int:
         """
         Given a sorted array and a target, find an index in the array where the value matches the target,
         if no match is found, return the index where the value is the last one to be below the target.
