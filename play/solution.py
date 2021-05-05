@@ -483,16 +483,20 @@ class Solution:
                 # if the idx element should be the larger at-x or should be the one after the smaller at-x
                 one_more1 = None if start1 + 1 == len1 else nums1[start1 + 1]
                 one_more2 = None if start2 + 1 == len2 else nums2[start2 + 1]
+                one_less1 = None if start1 == 0 else nums1[start1 - 1]
+                one_less2 = None if start2 == 0 else nums2[start2 - 1]
                 if at1 == at2:
                     # this case is probably not needed because we should have checked this condition already
                     found = at1
                 elif at1 < at2:
-                    found = at2 if one_more1 is None or one_more1 > at2 else one_more1
+                    found = at2 if one_more1 is None or one_more1 >= at2 else \
+                        (one_more1 if start2 == 0 or one_more1 >= one_less2 else None)
                 else:
                     # vice versa
-                    found = at1 if one_more2 is None or one_more2 > at1 else one_more2
-                # we are done
-                break
+                    found = at1 if one_more2 is None or one_more2 >= at1 else \
+                        (one_more2 if start1 == 0 or one_more2 >= one_less1 else None)
+                if found is not None:
+                    break
             # if we get here we are not close enough yet, so we advance within each array, by giving
             # half of need_ahead to each array, taking into account one of the arrays may overflow
             half_need = int(need_ahead / 2)
@@ -509,7 +513,7 @@ class Solution:
             start2 = start2 + take2
             at1 = nums1[start1]
             at2 = nums2[start2]
-            print(at1, at2, idx)
+            print(at1, at2, start1, start2, idx)
             if at1 == at2:
                 # we got lucky, the two arrays have the same value at the two advanced indices,
                 # so we know either one can be our value at idx.
@@ -519,7 +523,7 @@ class Solution:
                 # (+1 because start2 is 0-based, so say start2 = 0 then we need to add 1 to get len2 of 1)
                 if start2 + 1 == len2:
                     found = at1
-                elif idx - start1 - start2 - 2 > 0:
+                else:
                     # we took two samples, one from each array, and found that the one at array1 is larger
                     # so we step back in array1. I.e. we change start1 to the index in array1 where the value is
                     # the first such that is larger than at2 (we know it must exist, because worst case the value
@@ -536,7 +540,7 @@ class Solution:
                 # do the same thing as above, just 1 is 2 and 2 is 1
                 if start1 + 1 == len1:
                     found = at2
-                elif idx - start1 - start2 - 2 > 0:
+                else:
                     old_start2 = start2
                     start2 = Solution.find_target_index(nums2, at1 + 0.5)
                     start1 = start1 + (old_start2 - start2)
@@ -545,7 +549,6 @@ class Solution:
                         start1 = start1 - diff
                         start2 = start2 + diff
 
-        print("--", found)
         return found
 
     @staticmethod
