@@ -26,7 +26,8 @@ def main():
     sol = Solution()
     # print(sol.jump([2, 3, 1, 1, 4]))
     # print(sol.permute([1, 2, 3]))
-    print(sol.findMedianSortedArrays([1, 2, 3], [4, 5]))
+    # print(Solution.find_target_index([1, 2, 3], 1.5))
+    print(sol.findMedianSortedArrays([1, 2, 5, 6], [3, 4, 7, 8, 9]))
 
 
 def test() -> None:

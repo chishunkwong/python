@@ -499,41 +499,53 @@ class Solution:
             if len1 - start1 <= len2 - start2:
                 # first array has fewer numbers (counting from the current start), so we take
                 # from it first as it is the one that may not have enough elements to walk ahead of
-                take1 = half_need if half_need <= len1 else len1 - start1
+                take1 = half_need if start1 + half_need < len1 else len1 - start1 - 1
                 take2 = need_ahead - take1
             else:
                 # vice versa
-                take2 = half_need if half_need <= len2 else len2 - start2
+                take2 = half_need if start2 + half_need < len2 else len2 - start2 - 1
                 take1 = need_ahead - take2
-            at1 = nums1[start1 + take1]
-            at2 = nums2[start2 + take2]
-            print(at1, at2)
+            start1 = start1 + take1
+            start2 = start2 + take2
+            at1 = nums1[start1]
+            at2 = nums2[start2]
+            print(at1, at2, idx)
             if at1 == at2:
                 # we got lucky, the two arrays have the same value at the two advanced indices,
                 # so we know either one can be our value at idx.
                 found = at1
             elif at1 > at2:
                 # in case nums2 is actually exhausted, then at1 is already the answer
-                if start2 + take2 == len2:
+                # (+1 because start2 is 0-based, so say start2 = 0 then we need to add 1 to get len2 of 1)
+                if start2 + 1 == len2:
                     found = at1
-                else:
+                elif idx - start1 - start2 - 2 > 0:
                     # we took two samples, one from each array, and found that the one at array1 is larger
                     # so we step back in array1. I.e. we change start1 to the index in array1 where the value is
                     # the first such that is larger than at2 (we know it must exist, because worst case the value
                     # will be at1). Now we try again by returning to the top of the loop
-                    old_start1 = start1 + take1
+                    old_start1 = start1
                     start1 = Solution.find_target_index(nums1, at2 + 0.5)
-                    start2 = start2 + take2 + (old_start1 - start1)
+                    start2 = start2 + (old_start1 - start1)
+                    if start2 >= len2:
+                        diff = start2 - len2 + 1
+                        start2 = start2 - diff
+                        start1 = start1 + diff
             else:
                 # must be at2 > at1, because we already dealt with the equal case
                 # do the same thing as above, just 1 is 2 and 2 is 1
-                if start1 + take1 == len1:
+                if start1 + 1 == len1:
                     found = at2
-                else:
-                    old_start2 = start2 + take2
+                elif idx - start1 - start2 - 2 > 0:
+                    old_start2 = start2
                     start2 = Solution.find_target_index(nums2, at1 + 0.5)
-                    start1 = start1 + take1 + (old_start2 - start2)
+                    start1 = start1 + (old_start2 - start2)
+                    if start1 >= len1:
+                        diff = start1 - len1 + 1
+                        start1 = start1 - diff
+                        start2 = start2 + diff
 
+        print("--", found)
         return found
 
     @staticmethod
@@ -543,7 +555,7 @@ class Solution:
             half = int(l / 2)
             return (nums[half - 1] + nums[half]) / 2
         else:
-            return nums[int((l + 1) / 2)]
+            return nums[int((l - 1) / 2)]
 
     @staticmethod
     def find_target_index(nums: List[int], target: float) -> int:
@@ -565,9 +577,9 @@ class Solution:
             if at_mid == target:
                 found = mid
             elif at_mid < target:
-                start = mid + 1
+                start = mid
             else:
-                end = mid - 1
+                end = mid
 
         if found is None:
             if nums[start] >= target:
