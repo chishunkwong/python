@@ -450,8 +450,6 @@ class Solution:
         if is_odd:
             median, _ = Solution.find_value_at_sorted_index(nums1, nums2, half)
         else:
-            # Not the most effective, because if we found the value at half, we will almost have the value
-            # at half plus one, but this is simpler
             below, above = Solution.find_value_at_sorted_index(nums1, nums2, half, True)
             median = (below + above) / 2
         return median
