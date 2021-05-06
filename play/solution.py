@@ -448,16 +448,16 @@ class Solution:
         is_odd = len_all % 2 == 1
         half = int((len_all + 1) / 2 if is_odd else len_all / 2)
         if is_odd:
-            return Solution.find_value_at_sorted_index(nums1, nums2, half)
+            median, _ = Solution.find_value_at_sorted_index(nums1, nums2, half)
         else:
             # Not the most effective, because if we found the value at half, we will almost have the value
             # at half plus one, but this is simpler
-            median = (Solution.find_value_at_sorted_index(nums1, nums2, half)
-                      + Solution.find_value_at_sorted_index(nums1, nums2, half + 1)) / 2
-            return median
+            below, above = Solution.find_value_at_sorted_index(nums1, nums2, half, True)
+            median = (below + above) / 2
+        return median
 
     @staticmethod
-    def find_value_at_sorted_index(nums1: List[int], nums2: List[int], idx: int) -> float:
+    def find_value_at_sorted_index(nums1: List[int], nums2: List[int], idx: int, need_next: bool = False) -> float:
         """
         Given two sorted, non-empty, int arrays, and an int that is between 0 and len1 + len2, find the value
         at combined index of that int, if the two arrays were to be put together and sorted
@@ -478,6 +478,10 @@ class Solution:
                 if need_ahead == -1:
                     # this is the special case where both arrays have one element
                     found = min(at1, at2)
+                    if need_next:
+                        found = found, max(at1, at2)
+                    else:
+                        found = found, None
                     break
                 # if we get here it means we have reached the decision point where we check to see
                 # if the idx element should be the larger at-x or should be the one after the smaller at-x,
@@ -490,13 +494,25 @@ class Solution:
                     # this case is probably not needed because we should have checked this condition already
                     found = at1
                 elif at1 < at2:
-                    found = at2 if one_more1 is None or one_more1 >= at2 else \
-                        (one_more1 if start2 == 0 or one_more1 >= one_less2 else None)
+                    if one_more1 is None or one_more1 >= at2:
+                        found = at2
+                    elif start2 == 0 or one_more1 >= one_less2:
+                        found = one_more1
+                        start1 = start1 + 1
+                        start2 = start2 - 1
                 else:
                     # vice versa
-                    found = at1 if one_more2 is None or one_more2 >= at1 else \
-                        (one_more2 if start1 == 0 or one_more2 >= one_less1 else None)
+                    if one_more2 is None or one_more2 >= at1:
+                        found = at1
+                    elif start1 == 0 or one_more2 >= one_less1:
+                        found = one_more2
+                        start1 = start1 - 1
+                        start2 = start2 + 1
                 if found is not None:
+                    if need_next:
+                        found = found, Solution.find_next_value(nums1, nums2, start1, start2)
+                    else:
+                        found = found, None
                     break
             # If we get here we are not close enough yet, so we advance within each array, by giving
             # half of need_ahead to each array, taking into account one of the arrays may overflow.
@@ -522,11 +538,19 @@ class Solution:
                 # we got lucky, the two arrays have the same value at the two advanced indices,
                 # so we know either one can be our value at idx.
                 found = at1
+                if need_next:
+                    found = found, Solution.find_next_value(nums1, nums2, start1, start2)
+                else:
+                    found = found, None
             elif at1 > at2:
                 # in case nums2 is actually exhausted, then at1 is already the answer
                 # (+1 because start2 is 0-based, so say start2 = 0 then we need to add 1 to get len2 of 1)
                 if start2 + 1 == len2:
                     found = at1
+                    if need_next:
+                        found = found, Solution.find_next_value(nums1, nums2, start1, start2)
+                    else:
+                        found = found, None
                 else:
                     # we took two samples, one from each array, and found that the one at array1 is larger
                     # so we step back in array1. I.e. we change start1 to the index in array1 where the value is
@@ -544,6 +568,10 @@ class Solution:
                 # do the same thing as above, just 1 is 2 and 2 is 1
                 if start1 + 1 == len1:
                     found = at2
+                    if need_next:
+                        found = found, Solution.find_next_value(nums1, nums2, start1, start2)
+                    else:
+                        found = found, None
                 else:
                     old_start2 = start2
                     start2 = Solution.find_target_index(nums2, at1 + 0.5)
@@ -554,6 +582,26 @@ class Solution:
                         start2 = start2 + diff
 
         return found
+
+    @staticmethod
+    def find_next_value(nums1: List[int], nums2: List[int], idx1: int, idx2: int) -> float:
+        """
+        Given two sorted integer arrays and one index for each array, find the next value in the combined,
+        sorted, array. It is assumed that the two arrays when sliced to include up to the respective index, and
+        then combined, will constitute a contiguous slice in the combined, sorted, array.
+        The indices can be -1, which means that the corresponding array is not contributing any element to the
+        aforementioned combination, and the next value from that array is the 0-th element.
+        Likewise it can also be len-1, which means that array cannot possibly provide a next value (trivial case then)
+        """
+        len1 = len(nums1)
+        len2 = len(nums2)
+        if idx1 == len1 - 1:
+            answer = nums2[idx2 + 1]
+        elif idx2 == len2 - 1:
+            answer = nums1[idx1 + 1]
+        else:
+            answer = min(nums1[idx1 + 1], nums2[idx2 + 1])
+        return answer
 
     @staticmethod
     def simple_median(nums: List[int]) -> float:
