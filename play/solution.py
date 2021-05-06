@@ -480,7 +480,8 @@ class Solution:
                     found = min(at1, at2)
                     break
                 # if we get here it means we have reached the decision point where we check to see
-                # if the idx element should be the larger at-x or should be the one after the smaller at-x
+                # if the idx element should be the larger at-x or should be the one after the smaller at-x,
+                # or neither, then we keep going
                 one_more1 = None if start1 + 1 == len1 else nums1[start1 + 1]
                 one_more2 = None if start2 + 1 == len2 else nums2[start2 + 1]
                 one_less1 = None if start1 == 0 else nums1[start1 - 1]
@@ -497,20 +498,23 @@ class Solution:
                         (one_more2 if start1 == 0 or one_more2 >= one_less1 else None)
                 if found is not None:
                     break
-            # if we get here we are not close enough yet, so we advance within each array, by giving
-            # half of need_ahead to each array, taking into account one of the arrays may overflow
-            half_need = int(need_ahead / 2)
-            if len1 - start1 <= len2 - start2:
-                # first array has fewer numbers (counting from the current start), so we take
-                # from it first as it is the one that may not have enough elements to walk ahead of
-                take1 = half_need if start1 + half_need < len1 else len1 - start1 - 1
-                take2 = need_ahead - take1
-            else:
-                # vice versa
-                take2 = half_need if start2 + half_need < len2 else len2 - start2 - 1
-                take1 = need_ahead - take2
-            start1 = start1 + take1
-            start2 = start2 + take2
+            # If we get here we are not close enough yet, so we advance within each array, by giving
+            # half of need_ahead to each array, taking into account one of the arrays may overflow.
+            # It may also be that we have reached start1 + start2 + 2 = idx, but the two sides are imbalanced,
+            # if so we try again by taking from the high side and give to the low side
+            if need_ahead > 0:
+                half_need = int(need_ahead / 2)
+                if len1 - start1 <= len2 - start2:
+                    # first array has fewer numbers (counting from the current start), so we take
+                    # from it first as it is the one that may not have enough elements to walk ahead of
+                    take1 = half_need if start1 + half_need < len1 else len1 - start1 - 1
+                    take2 = need_ahead - take1
+                else:
+                    # vice versa
+                    take2 = half_need if start2 + half_need < len2 else len2 - start2 - 1
+                    take1 = need_ahead - take2
+                start1 = start1 + take1
+                start2 = start2 + take2
             at1 = nums1[start1]
             at2 = nums2[start2]
             print(at1, at2, start1, start2, idx)
