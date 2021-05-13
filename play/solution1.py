@@ -2,7 +2,7 @@ from typing import List
 from collections import deque
 
 
-class Solution:
+class Solution1:
 
     def wiggleSort(self, nums: List[int]) -> None:
         """

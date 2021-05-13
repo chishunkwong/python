@@ -1,4 +1,5 @@
-from solution import Solution
+from solution import Solution, ListNode
+from solution1 import Solution1
 from ebird import db_loader
 
 
@@ -8,7 +9,7 @@ def main_not():
 
 
 def main1():
-    sol = Solution()
+    sol = Solution1()
     # print(sol.increasingTriplet([2, 1, 5, 0, 4, 6]))
     # print(Solution.max_profit([3, 2, 3, 1, 4, 2, 6]))
     # print(sol.maxSlidingWindow([1, 3, -1, -3, 5, 3, 6, 7], 3))
@@ -19,11 +20,7 @@ def main1():
     # for line in arr:
     #     print(line)
     # print(sol.searchRange([8, 8, 8, 8], 8))
-    print(sol.searchRange([5, 7, 7, 8, 8, 8, 10], 7))
-
-
-def main():
-    sol = Solution()
+    # print(sol.searchRange([5, 7, 7, 8, 8, 8, 10], 7))
     # print(sol.jump([2, 3, 1, 1, 4]))
     # print(sol.permute([1, 2, 3]))
     # print(Solution.find_target_index([1, 2, 3], 1.5))
@@ -83,6 +80,14 @@ def main():
          27950, 28015, 28029, 28034, 28369, 28484, 28538, 28610, 28845, 29019, 29122, 29142, 29173, 29251, 29304, 29342,
          29517, 29595, 29731, 29750, 29830, 29961, 29987, 30053, 30374, 30398, 30510, 30633, 30661, 30748, 31278, 31310,
          31850, 31919, 32175, 32239, 32261, 32433, 32457, 32504, 32761]))
+
+
+def main():
+    sol = Solution()
+    # num1 = ListNode(2, ListNode(4, ListNode(3)))
+    num1 = ListNode(1)
+    num2 = ListNode(9, ListNode(9, ListNode(9)))
+    print(sol.addTwoNumbers(num1, num2))
 
 
 def test() -> None:
