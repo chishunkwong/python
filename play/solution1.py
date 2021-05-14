@@ -65,6 +65,11 @@ class Solution1:
 
     @staticmethod
     def max_profit(prices: List[int]):
+        """
+        Given a list of prices for a stock, find the max profit of buying once and selling once.
+        A buy-sell must happen even if it is for a loss.
+        @:return the profit/loss
+        """
         p_len = len(prices)
         if p_len < 2:
             return 0
@@ -373,7 +378,7 @@ class Solution1:
         from the 0-th index of the array to the last index of the array. E.g. [2,3,1,1,4] is 2 (from 0-th to 1-st
         i.e. use only 1 of the allowed 2, then jump 3 indices to reach the last index)
         """
-        return Solution.min_jump_at_idx(nums, 0, dict())
+        return Solution1.min_jump_at_idx(nums, 0, dict())
 
     @staticmethod
     def min_jump_at_idx(nums: List[int], idx: int, haves: dict) -> int:
@@ -396,7 +401,7 @@ class Solution1:
             return haves[idx]
         candidates = list()
         for jump in range(1, allowed + 1):
-            candidates.append(1 + Solution.min_jump_at_idx(nums, idx + jump, haves))
+            candidates.append(1 + Solution1.min_jump_at_idx(nums, idx + jump, haves))
         answer = min(candidates)
         haves[idx] = answer
         # print("partial:", idx, answer)
@@ -408,7 +413,7 @@ class Solution1:
         """
         seed = list()
         seed.append([])
-        return Solution.permute_recur(nums, seed)
+        return Solution1.permute_recur(nums, seed)
 
     @staticmethod
     def permute_recur(nums: List[int], answers) -> List[List[int]]:
@@ -428,7 +433,7 @@ class Solution1:
                 num = nums[i]
                 for a_list in answers_clone:
                     a_list.append(num)
-                ans_i = Solution.permute_recur(nums[0:i] + nums[i + 1: nums_len], answers_clone)
+                ans_i = Solution1.permute_recur(nums[0:i] + nums[i + 1: nums_len], answers_clone)
                 combined_answers.extend(ans_i)
             return combined_answers
 
@@ -441,16 +446,16 @@ class Solution1:
         len1 = len(nums1)
         len2 = len(nums2)
         if len1 == 0:
-            return Solution.simple_median(nums2)
+            return Solution1.simple_median(nums2)
         if len2 == 0:
-            return Solution.simple_median(nums1)
+            return Solution1.simple_median(nums1)
         len_all = len1 + len2
         is_odd = len_all % 2 == 1
         half = int((len_all + 1) / 2 if is_odd else len_all / 2)
         if is_odd:
-            median, _ = Solution.find_value_at_sorted_index(nums1, nums2, half)
+            median, _ = Solution1.find_value_at_sorted_index(nums1, nums2, half)
         else:
-            below, above = Solution.find_value_at_sorted_index(nums1, nums2, half, True)
+            below, above = Solution1.find_value_at_sorted_index(nums1, nums2, half, True)
             median = (below + above) / 2
         return median
 
@@ -508,7 +513,7 @@ class Solution1:
                         start2 = start2 + 1
                 if found is not None:
                     if need_next:
-                        found = found, Solution.find_next_value(nums1, nums2, start1, start2)
+                        found = found, Solution1.find_next_value(nums1, nums2, start1, start2)
                     else:
                         found = found, None
                     break
@@ -537,7 +542,7 @@ class Solution1:
                 # so we know either one can be our value at idx.
                 found = at1
                 if need_next:
-                    found = found, Solution.find_next_value(nums1, nums2, start1, start2)
+                    found = found, Solution1.find_next_value(nums1, nums2, start1, start2)
                 else:
                     found = found, None
             elif at1 > at2:
@@ -546,7 +551,7 @@ class Solution1:
                 if start2 + 1 == len2:
                     found = at1
                     if need_next:
-                        found = found, Solution.find_next_value(nums1, nums2, start1, start2)
+                        found = found, Solution1.find_next_value(nums1, nums2, start1, start2)
                     else:
                         found = found, None
                 else:
@@ -555,7 +560,7 @@ class Solution1:
                     # the first such that is larger than at2 (we know it must exist, because worst case the value
                     # will be at1). Now we try again by returning to the top of the loop
                     old_start1 = start1
-                    start1 = Solution.find_target_index(nums1, at2 + 0.5)
+                    start1 = Solution1.find_target_index(nums1, at2 + 0.5)
                     start2 = start2 + (old_start1 - start1)
                     if start2 >= len2:
                         diff = start2 - len2 + 1
@@ -567,12 +572,12 @@ class Solution1:
                 if start1 + 1 == len1:
                     found = at2
                     if need_next:
-                        found = found, Solution.find_next_value(nums1, nums2, start1, start2)
+                        found = found, Solution1.find_next_value(nums1, nums2, start1, start2)
                     else:
                         found = found, None
                 else:
                     old_start2 = start2
-                    start2 = Solution.find_target_index(nums2, at1 + 0.5)
+                    start2 = Solution1.find_target_index(nums2, at1 + 0.5)
                     start1 = start1 + (old_start2 - start2)
                     if start1 >= len1:
                         diff = start1 - len1 + 1
