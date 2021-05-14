@@ -1,3 +1,6 @@
+from typing import List
+
+
 class ListNode:
     def __init__(self, val=0, next=None):
         self.val = val
@@ -22,3 +25,6 @@ class Solution:
         else:
             answer = ListNode(digit_sum % 10, self.addTwoNumbers(self.addTwoNumbers(ListNode(1), l1.next), l2.next))
         return answer
+
+    def findMaxLength(self, nums: List[int]) -> int:
+        return 0
