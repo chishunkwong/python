@@ -37,12 +37,15 @@ class Solution:
         with an equal number of 0 and 1.
         """
         cum_sum = dict()
+        # initially we have no numbers and the sum is 0
         cum_sum[0] = -1
         cur = 0
         answer = 0
         for i, v in enumerate(nums):
             cur = cur + (1 if v == 1 else -1)
             if cur in cum_sum:
+                # if the current cum sum is seen before, then we have a candidate
+                # subarray, and so we just see if it is better than the current answer
                 last_i = cum_sum[cur]
                 answer = max(answer, i - last_i)
             else:
