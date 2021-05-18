@@ -13,6 +13,11 @@ class ListNode:
 class Solution:
 
     def addTwoNumbers(self, l1: ListNode, l2: ListNode) -> ListNode:
+        """
+        Add two numbers, where each number is represented as a linked list with the digits
+        in reverse order, so for example 1 -> 2 -> 3 is 321.
+        Return the sum in the same format
+        """
         if l1 is None and l2 is None:
             return None
         if l1 is None:
@@ -27,4 +32,19 @@ class Solution:
         return answer
 
     def findMaxLength(self, nums: List[int]) -> int:
-        return 0
+        """
+        Given a binary array nums, return the maximum length of a contiguous subarray
+        with an equal number of 0 and 1.
+        """
+        cum_sum = dict()
+        cum_sum[0] = -1
+        cur = 0
+        answer = 0
+        for i, v in enumerate(nums):
+            cur = cur + (1 if v == 1 else -1)
+            if cur in cum_sum:
+                last_i = cum_sum[cur]
+                answer = max(answer, i - last_i)
+            else:
+                cum_sum[cur] = i
+        return answer

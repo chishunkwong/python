@@ -85,9 +85,13 @@ def main1():
 def main():
     sol = Solution()
     # num1 = ListNode(2, ListNode(4, ListNode(3)))
-    num1 = ListNode(1)
-    num2 = ListNode(9, ListNode(9, ListNode(9)))
-    print(sol.addTwoNumbers(num1, num2))
+    # num1 = ListNode(1)
+    # num2 = ListNode(9, ListNode(9, ListNode(9)))
+    # print(sol.addTwoNumbers(num1, num2))
+    print(sol.findMaxLength([0]))
+    print(sol.findMaxLength([0, 1]))
+    print(sol.findMaxLength([0, 1, 0]))
+    print(sol.findMaxLength([0, 1, 1, 0, 1, 1]))
 
 
 def test() -> None:
