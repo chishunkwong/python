@@ -10,6 +10,20 @@ class ListNode:
         return str(self.val) if self.next is None else str(self.next) + str(self.val)
 
 
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+    def __str__(self):
+        if self.left is None and self.right is None:
+            return f"[{self.val}]"
+        left_str = f"{'None' if self.left is None else str(self.left)}"
+        right_str = f"{'None' if self.right is None else str(self.right)}"
+        return f"[{self.val}, {left_str}, {right_str}]"
+
+
 class Solution:
 
     def addTwoNumbers(self, l1: ListNode, l2: ListNode) -> ListNode:
@@ -51,3 +65,28 @@ class Solution:
             else:
                 cum_sum[cur] = i
         return answer
+
+    def buildTree(self, preorder: List[int], inorder: List[int]) -> TreeNode:
+        len_tree = len(preorder)
+        len_tree1 = len(inorder)
+        if len_tree1 != len_tree:
+            raise RuntimeError(f"unmatched lengths ${len_tree} ${len_tree1}")
+        if not preorder:
+            return None
+        root = preorder[0]
+        if len_tree == 1:
+            return TreeNode(root)
+        for i, v in enumerate(inorder):
+            if v == root:
+                root_inorder_idx = i
+                break
+        if root_inorder_idx == 0:
+            left = None
+        else:
+            # print("rii", root_inorder_idx, preorder[1: root_inorder_idx])
+            left = self.buildTree(preorder[1: root_inorder_idx + 1], inorder[0: root_inorder_idx])
+        if root_inorder_idx == len_tree - 1:
+            right = None
+        else:
+            right = self.buildTree(preorder[root_inorder_idx + 1:], inorder[root_inorder_idx + 1:])
+        return TreeNode(root, left, right)
