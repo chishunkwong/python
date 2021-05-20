@@ -67,6 +67,11 @@ class Solution:
         return answer
 
     def buildTree(self, preorder: List[int], inorder: List[int]) -> TreeNode:
+        """
+        Given two integer arrays preorder and inorder where preorder is the preorder traversal of a binary tree and
+        inorder is the inorder traversal of the same tree, construct and return the binary tree.
+        We can assume that all nodes have distinct values.
+        """
         len_tree = len(preorder)
         len_tree1 = len(inorder)
         if len_tree1 != len_tree:
@@ -92,6 +97,9 @@ class Solution:
         return TreeNode(root, left, right)
 
     def minimumTotal(self, triangle: List[List[int]]) -> int:
+        """
+        Given a triangle array, return the minimum path sum from top to bottom.
+        """
         calculated = dict()  # (row, col) to min_total
         return Solution.minimum_total(triangle, 0, 0, calculated)
 
