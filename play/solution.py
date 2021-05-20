@@ -90,3 +90,22 @@ class Solution:
         else:
             right = self.buildTree(preorder[root_inorder_idx + 1:], inorder[root_inorder_idx + 1:])
         return TreeNode(root, left, right)
+
+    def minimumTotal(self, triangle: List[List[int]]) -> int:
+        calculated = dict()  # (row, col) to min_total
+        return Solution.minimum_total(triangle, 0, 0, calculated)
+
+    @staticmethod
+    def minimum_total(triangle: List[List[int]], row: int, col: int, calculated: dict) -> int:
+        row_col = (row, col)
+        if row_col in calculated:
+            return calculated[row_col]
+        num_rows = len(triangle) - row
+        val_at = triangle[row][col]
+        if num_rows == 1:
+            min_total = val_at
+        else:
+            min_total = val_at + min(Solution.minimum_total(triangle, row + 1, col, calculated),
+                                     Solution.minimum_total(triangle, row + 1, col + 1, calculated))
+        calculated[row_col] = min_total
+        return min_total

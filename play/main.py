@@ -90,8 +90,10 @@ def main():
     # print(sol.addTwoNumbers(num1, num2))
     # print(sol.findMaxLength([0, 1]))
     # print(sol.findMaxLength([0, 1, 0]))
-    print(sol.buildTree([3, 9, 20, 15, 7], [9, 3, 15, 20, 7]))
-    print(sol.buildTree([-1], [-1]))
+    # print(sol.buildTree([3, 9, 20, 15, 7], [9, 3, 15, 20, 7]))
+    # print(sol.buildTree([-1], [-1]))
+    print(sol.minimumTotal([[2], [3, 4], [6, 5, 7], [4, 1, 8, 3]]))
+    print(sol.minimumTotal([[-10]]))
 
 
 def test() -> None:
