@@ -1,4 +1,5 @@
 from typing import List
+import collections
 
 
 class ListNode:
@@ -117,3 +118,61 @@ class Solution:
                                      Solution.minimum_total(triangle, row + 1, col + 1, calculated))
         calculated[row_col] = min_total
         return min_total
+
+    def evalRPN(self, tokens: List[str]) -> int:
+        """
+        HP calculator: https://leetcode.com/problems/evaluate-reverse-polish-notation/
+        """
+        dq = collections.deque()
+        for t in tokens:
+            try:
+                dq.append(int(t))
+            except Exception:
+                right = dq.pop()
+                left = dq.pop()
+                if t == '+':
+                    result = left + right
+                elif t == '-':
+                    result = left - right
+                elif t == '*':
+                    result = left * right
+                elif t == '/':
+                    result = int(left / right)
+                else:
+                    raise RuntimeError(t)
+                dq.append(result)
+        return dq.pop()
+
+    def evalRPN1(self, tokens: List[str]) -> int:
+        # slow answer for https://leetcode.com/problems/evaluate-reverse-polish-notation/, too much recursion
+        # the last one must be an operator, the job is just to find the two operands
+        operator = tokens[-1]
+        if operator == '+':
+            left, right = self.find_operands(tokens)
+            return self.evalRPN(left) + self.evalRPN(right)
+        elif operator == '-':
+            left, right = self.find_operands(tokens)
+            return self.evalRPN(left) - self.evalRPN(right)
+        elif operator == '*':
+            left, right = self.find_operands(tokens)
+            return self.evalRPN(left) * self.evalRPN(right)
+        elif operator == '/':
+            left, right = self.find_operands(tokens)
+            return int(self.evalRPN(left) / self.evalRPN(right))
+        else:
+            return int(operator)
+
+    def find_operands(self, tokens: List[str]):
+        int_count = 0
+        oper_count = 0
+        l = len(tokens)
+        for i in range(l - 2, 0, -1):
+            try:
+                int(tokens[i])
+                int_count = int_count + 1
+            except Exception:
+                oper_count = oper_count + 1
+            print(i, int_count, oper_count)
+            if int_count - oper_count == 1:
+                return tokens[0: i], tokens[i: l - 1]
+        raise RuntimeError("invalid tokens" + str(tokens))

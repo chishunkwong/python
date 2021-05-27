@@ -92,8 +92,11 @@ def main():
     # print(sol.findMaxLength([0, 1, 0]))
     # print(sol.buildTree([3, 9, 20, 15, 7], [9, 3, 15, 20, 7]))
     # print(sol.buildTree([-1], [-1]))
-    print(sol.minimumTotal([[2], [3, 4], [6, 5, 7], [4, 1, 8, 3]]))
-    print(sol.minimumTotal([[-10]]))
+    # print(sol.minimumTotal([[2], [3, 4], [6, 5, 7], [4, 1, 8, 3]]))
+    # print(sol.minimumTotal([[-10]]))
+    print(sol.evalRPN(["2", "1", "+", "3", "*"]))
+    print(sol.evalRPN(["4", "13", "5", "/", "+"]))
+    print(sol.evalRPN(["10", "6", "9", "3", "+", "-11", "*", "/", "*", "17", "+", "5", "+"]))
 
 
 def test() -> None:
